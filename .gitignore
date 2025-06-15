@@ -1,0 +1,13 @@
+# Node / backend
+/backend/node_modules
+/backend/dist
+/backend/.env
+
+# Frontend / Vite React
+/frontend/node_modules
+/frontend/dist
+/frontend/.env
+
+# Common
+.DS_Store
+.vscode/
