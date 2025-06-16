@@ -1,18 +1,18 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { UserModel } from "../models/user.model";
+
 import { AuthRequest } from "../types";
-import { sendError, sendSuccess } from "../utils/response.utils";
+import { ApiError, sendSuccess } from "../utils/response.utils";
 import admin from "../config/firebase-admin.config";
+import { UserModel } from "../models";
 
 class AuthController {
-  async login(req: Request, res: Response) {
+  async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { idToken } = req.body;
-      console.log("Received ID Token:", idToken);
 
       if (!idToken) {
-        sendError(res, "ID token is required", 400);
+        throw new ApiError(400, "ID token is required");
       }
 
       const decoded = await admin.auth().verifyIdToken(idToken);
@@ -30,22 +30,20 @@ class AuthController {
       });
 
       res.clearCookie("token");
-
       res.cookie("token", jwtToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
+        maxAge: 24 * 60 * 60 * 1000,
       });
 
       sendSuccess(res, "Login successful", user);
     } catch (error) {
-      console.error("Login error:", error);
-      sendError(res, "Invalid ID token", 401);
+      next(error);
     }
   }
 
-  async logout(req: Request, res: Response) {
+  async logout(req: Request, res: Response, next: NextFunction) {
     try {
       res.clearCookie("token", {
         httpOnly: true,
@@ -55,25 +53,23 @@ class AuthController {
 
       sendSuccess(res, "Logged out successfully");
     } catch (error) {
-      console.error("Logout error:", error);
-      sendError(res, "Logout failed", 500);
+      next(error);
     }
   }
 
-  async me(req: AuthRequest, res: Response) {
+  async me(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const user = await UserModel.findOne({ uid: req.user?.uid }).select(
         "-_id -__v"
       );
 
       if (!user) {
-        sendError(res, "User not found", 404);
+        throw new ApiError(404, "User not found");
       }
 
       sendSuccess(res, "User fetched successfully", user);
     } catch (error) {
-      console.error("Error fetching user:", error);
-      sendError(res, "Internal server error", 500);
+      next(error);
     }
   }
 }

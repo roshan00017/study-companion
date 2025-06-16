@@ -4,7 +4,6 @@ interface ApiResponse<T> {
   success: boolean;
   message: string;
   data?: T;
-  error?: any;
 }
 
 export const sendSuccess = <T>(
@@ -19,16 +18,9 @@ export const sendSuccess = <T>(
     data,
   });
 };
-
-export const sendError = (
-  res: Response,
-  message: string,
-  status: number = 400,
-  error?: any
-): Response<ApiResponse<never>> => {
-  return res.status(status).json({
-    success: false,
-    message,
-    error,
-  });
-};
+export class ApiError extends Error {
+  constructor(public statusCode: number, message: string) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
