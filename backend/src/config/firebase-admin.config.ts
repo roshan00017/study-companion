@@ -1,16 +1,20 @@
-import admin from "firebase-admin";
+import * as admin from "firebase-admin";
+import dotenv from "dotenv";
 
-const firebaseProjectId = process.env.FIREBASE_PROJECT_ID!;
-const firebaseClientEmail = process.env.FIREBASE_CLIENT_EMAIL!;
-const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY!;
+const { FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL } =
+  process.env;
 
-const privateKey = firebasePrivateKey.replace(/\\n/g, "\n");
+if (!FIREBASE_PROJECT_ID || !FIREBASE_PRIVATE_KEY || !FIREBASE_CLIENT_EMAIL) {
+  throw new Error("Missing Firebase admin configuration");
+}
+
+const privateKey = FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n");
 
 admin.initializeApp({
   credential: admin.credential.cert({
-    projectId: firebaseProjectId,
-    clientEmail: firebaseClientEmail,
+    projectId: FIREBASE_PROJECT_ID,
     privateKey: privateKey,
+    clientEmail: FIREBASE_CLIENT_EMAIL,
   }),
 });
 

@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { authController } from "../controllers";
+import { verifyJWT } from "../middlewares/auth.middleware";
 
 const router = Router();
 
 router.post("/login", authController.login);
-router.get("/logout", authController.logout);
-router.get("/me", authController.me);
-``;
+router.post("/logout", authController.logout);
+router.get("/me", verifyJWT, authController.me);
 
 export default router;

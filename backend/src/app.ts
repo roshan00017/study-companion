@@ -2,15 +2,14 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth.route"; // Adjust the path as needed
-
 dotenv.config();
+import authRoutes from "./routes/auth.route"; // Adjust the path as needed
 
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000", // your frontend URL
+    origin: "http://localhost:5173", // your frontend URL
     credentials: true,
   })
 );
