@@ -13,7 +13,7 @@ type AuthContextType = {
   user: User | null;
   loading: boolean;
   logout: () => Promise<void>;
-  login: (userData: User) => void; 
+  login: (userData: User) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,8 +26,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchMe = async () => {
       try {
         const res = await api.get("/api/auth/me");
-        setUser(res.data.user);
-      } catch {
+        console.log("Fetched user:", res.data.data); // <--- Add this
+        setUser(res.data.data);
+      } catch (e) {
+        console.error("Fetch me failed", e);
         setUser(null);
       } finally {
         setLoading(false);
@@ -36,7 +38,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     fetchMe();
   }, []);
-
   const logout = async () => {
     try {
       await api.post("/api/auth/logout");
@@ -44,7 +45,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Logout error:", error);
     } finally {
       setUser(null);
-      window.location.href = "/";
+      window.location.href = "/login";
     }
   };
   const login = (userData: User) => {
