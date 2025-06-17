@@ -9,6 +9,7 @@ router.use(verifyJWT);
 router.post("/", noteController.createNote);
 router.get("/", noteController.getNotes);
 router.get("/:id", noteController.getNoteById);
+router.get("/task/:taskId", noteController.getNotesByTaskId);
 router.put("/:id", noteController.updateNote);
 router.delete("/:id", noteController.deleteNote);
 

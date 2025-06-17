@@ -5,7 +5,6 @@ class NoteService {
   async createNote(userId: string, noteData: CreateNoteDto): Promise<INote> {
     const { taskId, ...restData } = noteData;
 
-    // Only include taskId if it's not empty
     const notePayload = {
       userId,
       ...restData,
@@ -22,7 +21,9 @@ class NoteService {
   async getNoteById(noteId: string, userId: string): Promise<INote | null> {
     return await NoteModel.findOne({ _id: noteId, userId });
   }
-
+  async getNotesByTaskId(userId: string, taskId: string): Promise<INote[]> {
+    return await NoteModel.find({ userId, taskId }).sort({ updatedAt: -1 });
+  }
   async updateNote(
     noteId: string,
     userId: string,

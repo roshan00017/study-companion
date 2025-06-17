@@ -55,7 +55,21 @@ class NoteController {
       next(error);
     }
   }
+  async getNotesByTaskId(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.uid;
+      const { taskId } = req.params;
 
+      if (!userId) {
+        throw new ApiError(401, "User not authenticated");
+      }
+
+      const notes = await noteService.getNotesByTaskId(userId, taskId);
+      sendSuccess(res, "Notes fetched successfully", notes);
+    } catch (error) {
+      next(error);
+    }
+  }
   async updateNote(
     req: AuthRequest<UpdateNoteDto>,
     res: Response,
