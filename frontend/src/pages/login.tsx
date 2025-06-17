@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "../services/firebase";
 import {
@@ -16,11 +16,16 @@ export default function Login() {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
 
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, navigate]);
   const handleAuth = async (idToken: string) => {
     try {
-      const response = await api.post("/api/auth/login", {
+      const response = await api.post("/auth/login", {
         idToken,
       });
 
@@ -28,8 +33,6 @@ export default function Login() {
         const userData = mapApiUserToUser(response.data.data);
         login(userData);
         navigate("/dashboard", { replace: true });
-      } else {
-        setError(response.data.message || "Login failed");
       }
     } catch (err) {
       console.error("Authentication error:", err);

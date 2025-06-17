@@ -1,1 +1,64 @@
 @import "tailwindcss";
+@import "react-quill-new/dist/quill.snow.css";
+
+@layer components {
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+/* Note Card Preview Styles */
+.ql-editor {
+  @apply text-gray-800;
+}
+
+.ql-editor h1 {
+  @apply text-2xl font-bold;
+}
+
+.ql-editor h2 {
+  @apply text-xl font-bold;
+}
+
+.ql-editor h3 {
+  @apply text-lg font-bold;
+}
+
+.ql-editor ol {
+  @apply list-decimal list-inside;
+}
+
+.ql-editor ul {
+  @apply list-disc list-inside;
+}
+
+.ql-editor li {
+  @apply mb-0.5;
+}
+
+/* Hide the redundant list marker from Quill */
+.ql-editor .ql-ui {
+  display: none;
+}
+
+/* Custom scrollbar for preview */
+.ql-editor::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ql-editor::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.ql-editor::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded;
+}

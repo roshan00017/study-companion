@@ -11,12 +11,16 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@lexical/react": "^0.32.1",
     "@tailwindcss/vite": "^4.1.10",
     "axios": "^1.9.0",
     "firebase": "^11.9.1",
     "framer-motion": "^12.18.1",
+    "lexical": "^0.32.1",
+    "quill": "^2.0.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-quill-new": "^3.4.6",
     "react-router-dom": "^7.6.2",
     "tailwindcss": "^4.1.10"
   },

@@ -25,8 +25,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const fetchMe = async () => {
       try {
-        const res = await api.get("/api/auth/me");
-        console.log("Fetched user:", res.data.data); // <--- Add this
+        const res = await api.get("/auth/me");
+        console.log("Fetched user:", res.data.data);
         setUser(res.data.data);
       } catch (e) {
         console.error("Fetch me failed", e);
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
   const logout = async () => {
     try {
-      await api.post("/api/auth/logout");
+      await api.post("/auth/logout");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {

@@ -9,6 +9,7 @@ import NotesPage from "./pages/Notes/NotesPage";
 // import TaskPage from "./pages/Tasks/TaskPage";
 import React from "react";
 import RootRedirect from "./routes/RootRedirect";
+import TasksPage from "./pages/Tasks/TasksPage";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -61,15 +62,15 @@ export default function App() {
                   <FlashcardsPage />
                 </RequireAuth>
               }
-            />
+            /> */}
             <Route
               path="tasks"
               element={
                 <RequireAuth>
-                  <TaskPage />
+                  <TasksPage />
                 </RequireAuth>
               }
-            /> */}
+            />
           </Route>
         </Routes>
       </ErrorBoundary>
