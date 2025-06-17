@@ -10,6 +10,9 @@ import NotesPage from "./pages/Notes/NotesPage";
 import React from "react";
 import RootRedirect from "./routes/RootRedirect";
 import TasksPage from "./pages/Tasks/TasksPage";
+import FlashcardsPage from "./pages/Flashcards/FlashCardsPage";
+import SetFlashcards from "./components/flashCards/SetFlashcards";
+import QuizPage from "./pages/Quiz/QuizPage";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -55,14 +58,30 @@ export default function App() {
                 </RequireAuth>
               }
             />
-            {/* <Route
+            <Route
               path="flashcards"
               element={
                 <RequireAuth>
                   <FlashcardsPage />
                 </RequireAuth>
               }
-            /> */}
+            />
+            <Route
+              path="flashcards/:setId"
+              element={
+                <RequireAuth>
+                  <SetFlashcards />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="flashcards/:setId/quiz"
+              element={
+                <RequireAuth>
+                  <QuizPage />
+                </RequireAuth>
+              }
+            />
             <Route
               path="tasks"
               element={
