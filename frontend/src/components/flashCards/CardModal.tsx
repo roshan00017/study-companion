@@ -1,13 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
+  initial?: {
+    question?: string;
+    answer?: string;
+  };
   onClose: () => void;
   onSubmit: (data: { question: string; answer: string }) => void;
 }
 
-export default function CardModal({ onClose, onSubmit }: Props) {
+export default function CardModal({ initial, onClose, onSubmit }: Props) {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+  useEffect(() => {
+    if (initial) {
+      setQuestion(initial.question || "");
+      setAnswer(initial.answer || "");
+    }
+  }, [initial]);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

@@ -15,6 +15,7 @@ import NoteCard from "../../components/notes/NoteCard";
 import NoteModal from "../../components/notes/NoteModal";
 import ViewNoteModal from "../../components/notes/ViewNoteModal";
 import type { NotePayload } from "../../types/note.type";
+import { useItemUpdates } from "../../components/hooks/useItemupdates";
 
 interface Note {
   _id: string;
@@ -31,7 +32,9 @@ export default function NotesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [viewingNote, setViewingNote] = useState<Note | null>(null);
-
+  useItemUpdates("note", (newNote) => {
+    setNotes((prev) => [newNote, ...prev]);
+  });
   useEffect(() => {
     loadNotes();
   }, []);

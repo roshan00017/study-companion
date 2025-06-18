@@ -15,6 +15,7 @@ import TaskCard from "../../components/task/TaskCard";
 import TaskModal from "../../components/task/TaskModal";
 import type { Task, TaskPayload } from "../../types/task.type";
 import TaskViewModal from "../../components/task/TaskViewModal";
+import { useItemUpdates } from "../../components/hooks/useItemupdates";
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -24,6 +25,9 @@ export default function TasksPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
+  useItemUpdates("task", (newTask) => {
+    setTasks((prev) => [newTask, ...prev]);
+  });
 
   useEffect(() => {
     loadTasks();
@@ -200,7 +204,7 @@ export default function TasksPage() {
                     }}
                     onDelete={handleDelete}
                     onView={(t) => setViewingTask(t)}
-                     onSubtaskToggle={handleSubtaskToggle}
+                    onSubtaskToggle={handleSubtaskToggle}
                   />
                 </motion.div>
               ))}

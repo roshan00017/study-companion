@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import Sidebar from "./Sidebar";
+import ChatWidget from "../chat/ChatWidget";
 
 export default function DashboardLayout() {
   const { logout, user } = useAuth();
@@ -31,6 +32,7 @@ export default function DashboardLayout() {
         </header>
         <main className="p-6">
           <Outlet />
+          <ChatWidget /> {/* Always visible in dashboard */}
         </main>
       </div>
     </div>
