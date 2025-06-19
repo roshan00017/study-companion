@@ -18,7 +18,8 @@
     "firebase-admin": "^13.4.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.2",
-    "openai": "^5.5.1"
+    "openai": "^5.5.1",
+    "string-similarity": "^4.0.4"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
@@ -26,6 +27,7 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^24.0.1",
+    "@types/string-similarity": "^4.0.2",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"

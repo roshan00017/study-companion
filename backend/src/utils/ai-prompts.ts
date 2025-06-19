@@ -54,10 +54,22 @@ export function getPromptForType(
   type: "task" | "note" | "flashcard",
   topic: string
 ): string {
+  if (type === "note") {
+    return `Generate a note about: "${topic}"
+Requirements:
+- Use HTML tags such as <h1>, <h2>, <ul>, <li>, <b>, <i>, <p>, etc. for formatting.
+- Do NOT use markdown (#, ##, etc.).
+- The note content must be at least two paragraphs and should not be short.
+- Respond ONLY with valid JSON matching the example structure below (no extra text or markdown):
+
+${JSON.stringify(EXAMPLE_STRUCTURES.note, null, 2)}
+`;
+  }
   return `Generate ${
     type === "flashcard" ? "5 flashcards" : `a ${type}`
   } about: "${topic}"
 Using EXACTLY this structure (respond with JSON only):
 
-${JSON.stringify(EXAMPLE_STRUCTURES[type], null, 2)}`;
-}
+${JSON.stringify(EXAMPLE_STRUCTURES[type], null, 2)}
+`;
+} 

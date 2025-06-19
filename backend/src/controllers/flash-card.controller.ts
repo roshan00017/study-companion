@@ -7,6 +7,7 @@ import {
   QuizSubmissionDto,
 } from "../types";
 import { ApiError, sendSuccess } from "../utils/response.utils";
+import { FlashcardModel, FlashcardSetModel } from "../models";
 
 class FlashcardController {
   async createSet(
@@ -121,6 +122,33 @@ class FlashcardController {
       next(error);
     }
   }
+
+
+  async deleteSet(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    const userId = req.user?.uid;
+    const { setId } = req.params;
+    if (!userId) throw new ApiError(401, "User not authenticated");
+    const deleted = await flashcardService.deleteSet(userId, setId);
+    if (!deleted) throw new ApiError(404, "Set not found");
+    sendSuccess(res, "Flashcard set and its cards deleted successfully");
+  } catch (error) {
+    next(error);
+  }
+}
+
+async deleteSetCard(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    const userId = req.user?.uid;
+    const {cardId } = req.params;
+    if (!userId) throw new ApiError(401, "User not authenticated");
+    const deleted = await flashcardService.deleteSetCard(userId, cardId);
+    if (!deleted) throw new ApiError(404, "Card not found");
+    sendSuccess(res, "Card deleted successfully");
+  } catch (error) {
+    next(error);
+  }
+}
 }
 
 export default new FlashcardController();

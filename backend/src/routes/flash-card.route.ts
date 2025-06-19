@@ -12,5 +12,7 @@ router.get("/quiz/start/:setId", flashcardController.startQuiz);
 router.post("/quiz/submit", flashcardController.submitQuiz);
 router.post("/cards", flashcardController.createFlashcard);
 router.get("/sets/:setId/cards", flashcardController.getFlashcardsBySet);
+router.delete("/sets/:setId", flashcardController.deleteSet);
+router.delete("/cards/:cardId", flashcardController.deleteSetCard);
 
 export default router;

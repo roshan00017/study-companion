@@ -1,4 +1,5 @@
 import { FlashcardModel, FlashcardSetModel } from "../models";
+import stringSimilarity from "string-similarity";
 import {
   CreateFlashcardDto,
   CreateFlashcardSetDto,
@@ -41,7 +42,7 @@ class FlashcardService {
     ]);
   }
 
-  async evaluateQuiz(userId: string, submission: QuizSubmissionDto) {
+   async evaluateQuiz(userId: string, submission: QuizSubmissionDto) {
     const ids = submission.answers.map((a) => a.flashcardId);
     const flashcards = await FlashcardModel.find({ _id: { $in: ids }, userId });
 
@@ -50,9 +51,16 @@ class FlashcardService {
       const original = flashcards.find(
         (f) => f._id.toString() === a.flashcardId
       );
-      const isCorrect =
-        original?.answer.trim().toLowerCase() ===
-        a.userAnswer.trim().toLowerCase();
+    
+      const similarity =
+        original && a.userAnswer
+          ? stringSimilarity.compareTwoStrings(
+              original.answer.trim().toLowerCase(),
+              a.userAnswer.trim().toLowerCase()
+            )
+          : 0;
+     
+      const isCorrect = similarity >= 0.2;
       if (isCorrect) correctCount++;
 
       return {
@@ -60,6 +68,7 @@ class FlashcardService {
         correctAnswer: original?.answer,
         userAnswer: a.userAnswer,
         isCorrect,
+        similarityScore: similarity,
       };
     });
 
@@ -70,6 +79,18 @@ class FlashcardService {
       results,
     };
   }
+
+async deleteSet(userId: string, setId: string) {
+  await FlashcardModel.deleteMany({ userId, setId });
+  const result = await FlashcardSetModel.findOneAndDelete({ userId, _id: setId });
+  return result;
+}
+
+async deleteSetCard(userId: string, cardId: string) {
+  const result = await FlashcardModel.findOneAndDelete({ userId, _id: cardId });
+  return result;
+}
+
 }
 
 export default new FlashcardService();
