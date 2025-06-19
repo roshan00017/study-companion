@@ -37,12 +37,12 @@ class AIGenerationService {
 
   async generateTask(userId: string, topic: string): Promise<CreateTaskDto> {
     const taskData = await this.generateContent<CreateTaskDto>("task", topic);
-    return await taskService.createTask(userId, taskData);
+    return taskData;
   }
 
   async generateNote(userId: string, topic: string): Promise<CreateNoteDto> {
     const noteData = await this.generateContent<CreateNoteDto>("note", topic);
-    return await noteService.createNote(userId, noteData);
+    return  noteData;
   }
 
   async generateFlashcards(
