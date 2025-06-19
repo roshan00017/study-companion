@@ -7,7 +7,6 @@ import {
   PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
 import api from "../../services/api";
-
 import SelectionModal from "./SelectionModal";
 import MessageContent from "./MessageContent";
 import type {
@@ -20,11 +19,15 @@ import CardModal from "../flashCards/CardModal";
 import TaskModal from "../task/TaskModal";
 import NoteModal from "../notes/NoteModal";
 
+// --- ChatWidget Component ---
 export default function ChatWidget() {
+  // --- State ---
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Modal and selection state
   const [showSelection, setShowSelection] = useState<{
     type: "notes" | "tasks" | "flashcards";
     items: SelectableItem[];
@@ -33,16 +36,22 @@ export default function ChatWidget() {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showCardModal, setShowCardModal] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<any>(null);
-  const location = useLocation();
-  const chatPath = location.pathname;
-  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Input modal for topic/set selection
   const [inputModal, setInputModal] = useState<{
     type: "note" | "task" | "flashcard";
     title: string;
     topic: string;
     setId?: string;
   } | null>(null);
-const [pendingSetId, setPendingSetId] = useState<string | null>(null);
+  const [pendingSetId, setPendingSetId] = useState<string | null>(null);
+
+  // --- Refs and location ---
+  const location = useLocation();
+  const chatPath = location.pathname;
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // --- Effects ---
   useEffect(() => {
     const savedMessages = chatStorage.getChats(chatPath);
     setMessages(savedMessages);
@@ -58,75 +67,11 @@ const [pendingSetId, setPendingSetId] = useState<string | null>(null);
     }
   }, [messages]);
 
-  const handleGenerateContent = async (type: string, topic: string,setId?: string) => {
-    try {
-      setLoading(true);
-      const response = await api.post(`/ai/generate/${type}`, { topic,setId });
-      const generatedData = response.data.data;
-
-      // Map the data according to type
-      const modalContent = {
-        type,
-        data:
-          type === "note"
-            ? {
-                title: generatedData.title,
-                content: generatedData.content,
-                taskId: generatedData.taskId,
-              }
-            : type === "task"
-            ? {
-                title: generatedData.title,
-                description: generatedData.description,
-                priority: generatedData.priority || "medium",
-                dueDate: generatedData.dueDate,
-                subtasks: generatedData.subtasks || [],
-              }
-            : type === "flashcard"
-            ? {
-                setId: generatedData.setId,
-                cards: generatedData.cards || [],
-              }
-            : null,
-      };
-      setGeneratedContent(modalContent);
-      // Add these lines to show the appropriate modal
-      switch (type) {
-        case "note":
-          setShowNoteModal(true);
-          break;
-        case "task":
-          setShowTaskModal(true);
-          break;
-        case "flashcard":
-          setShowCardModal(false);
-          break;
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: `I've generated a ${type} about "${topic}". You can review and edit it now.`,
-        },
-      ]);
-    } catch (error) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Sorry, I encountered an error while generating content.",
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // --- Utility Functions ---
   const getSection = (): "notes" | "tasks" | "flashcards" => {
     if (location.pathname.includes("notes")) return "notes";
     if (location.pathname.includes("tasks")) return "tasks";
     if (location.pathname.includes("flashcards")) return "flashcards";
-    // Default to "notes" or any valid section if none matches
     return "notes";
   };
 
@@ -136,6 +81,7 @@ const [pendingSetId, setPendingSetId] = useState<string | null>(null);
     return tmp.textContent || tmp.innerText || "";
   };
 
+  // --- Chat/AI Functions ---
   const send = async (text?: string) => {
     const content = text || input.trim();
     if (!content) return;
@@ -168,22 +114,90 @@ const [pendingSetId, setPendingSetId] = useState<string | null>(null);
     }
   };
 
+  const handleGenerateContent = async (
+    type: string,
+    topic: string,
+    setId?: string
+  ) => {
+    try {
+      setLoading(true);
+      const response = await api.post(`/ai/generate/${type}`, { topic, setId });
+      const generatedData = response.data.data;
+
+      // Map the data according to type
+      const modalContent = {
+        type,
+        data:
+          type === "note"
+            ? {
+                title: generatedData.title,
+                content: generatedData.content,
+                taskId: generatedData.taskId,
+              }
+            : type === "task"
+            ? {
+                title: generatedData.title,
+                description: generatedData.description,
+                priority: generatedData.priority || "medium",
+                dueDate: generatedData.dueDate,
+                subtasks: generatedData.subtasks || [],
+              }
+            : type === "flashcard"
+            ? {
+                setId: generatedData.setId,
+                cards: generatedData.cards || [],
+              }
+            : null,
+      };
+      setGeneratedContent(modalContent);
+
+      // Show the appropriate modal
+      switch (type) {
+        case "note":
+          setShowNoteModal(true);
+          break;
+        case "task":
+          setShowTaskModal(true);
+          break;
+        case "flashcard":
+          setShowCardModal(false);
+          break;
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: `I've generated a ${type} about "${topic}". You can review and edit it now.`,
+        },
+      ]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "Sorry, I encountered an error while generating content.",
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- Summarize and Selection ---
   const handleSummarize = async () => {
     const section = getSection();
     try {
       let items: SelectableItem[] = [];
       switch (section) {
         case "notes":
-          const notesRes = await api.get("/notes");
-          items = notesRes.data.data;
+          items = (await api.get("/notes")).data.data;
           break;
         case "tasks":
-          const tasksRes = await api.get("/tasks");
-          items = tasksRes.data.data;
+          items = (await api.get("/tasks")).data.data;
           break;
         case "flashcards":
-          const setsRes = await api.get("/flashcards/sets");
-          items = setsRes.data.data;
+          items = (await api.get("/flashcards/sets")).data.data;
           break;
       }
       setShowSelection({ type: section, items });
@@ -204,22 +218,23 @@ const [pendingSetId, setPendingSetId] = useState<string | null>(null);
     const section = getSection();
 
     // If in flashcards section and no pendingSetId, this is for card creation
-  if (section === "flashcards" && !pendingSetId && inputModal === null) {
-    setPendingSetId(item._id);
-    setInputModal({
-      type: "flashcard",
-      title: `Enter topic for "${item.title}"`,
-      topic: "",
-      setId: item._id,
-    });
-    return;
-  }
-    let prompt = "";
+    if (section === "flashcards" && !pendingSetId && inputModal === null) {
+      setPendingSetId(item._id);
+      setInputModal({
+        type: "flashcard",
+        title: `Enter topic for "${item.title}"`,
+        topic: "",
+        setId: item._id,
+      });
+      return;
+    }
 
+    let prompt = "";
     switch (section) {
       case "notes":
-        const plainContent = stripHtml(item.content || "");
-        prompt = `Summarize this note:\nTitle: ${item.title}\nContent: ${plainContent}`;
+        prompt = `Summarize this note:\nTitle: ${item.title}\nContent: ${stripHtml(
+          item.content || ""
+        )}`;
         break;
       case "tasks":
         prompt = `Summarize this task:\nTitle: ${item.title}\nDescription: ${
@@ -252,10 +267,10 @@ const [pendingSetId, setPendingSetId] = useState<string | null>(null);
         }
         break;
     }
-
     send(prompt);
   };
 
+  // --- Quick Prompts ---
   const quickPrompts = (): QuickPrompt[] => {
     const section = getSection();
     if (section === "notes") {
@@ -294,24 +309,23 @@ const [pendingSetId, setPendingSetId] = useState<string | null>(null);
     }
     if (section === "flashcards") {
       return [
-           {
-        label: "📚 Create Cards",
-        action: async () => {
-          // Fetch sets and show selection modal
-          try {
-            const setsRes = await api.get("/flashcards/sets");
-            setShowSelection({ type: "flashcards", items: setsRes.data.data });
-          } catch (err) {
-            setMessages((prev) => [
-              ...prev,
-              {
-                role: "assistant",
-                content: "⚠️ Failed to load flashcard sets.",
-              },
-            ]);
-          }
+        {
+          label: "📚 Create Cards",
+          action: async () => {
+            try {
+              const setsRes = await api.get("/flashcards/sets");
+              setShowSelection({ type: "flashcards", items: setsRes.data.data });
+            } catch (err) {
+              setMessages((prev) => [
+                ...prev,
+                {
+                  role: "assistant",
+                  content: "⚠️ Failed to load flashcard sets.",
+                },
+              ]);
+            }
+          },
         },
-      },
         {
           label: "🔍 Summarize",
           action: handleSummarize,
@@ -323,20 +337,24 @@ const [pendingSetId, setPendingSetId] = useState<string | null>(null);
       { label: "📚 Learning Plan", text: "Help me create a learning plan" },
     ];
   };
-const handleInputSubmit = async (topic: string) => {
-  if (!inputModal) return;
 
-  setInputModal(null);
+  // --- Input Modal Submit ---
+  const handleInputSubmit = async (topic: string) => {
+    if (!inputModal) return;
+    setInputModal(null);
 
-  if (inputModal.type === "flashcard" && pendingSetId) {
-    await handleGenerateContent("flashcard", topic, pendingSetId);
-    setPendingSetId(null);
-  } else {
-    await handleGenerateContent(inputModal.type, topic);
-  }
-};
+    if (inputModal.type === "flashcard" && pendingSetId) {
+      await handleGenerateContent("flashcard", topic, pendingSetId);
+      setPendingSetId(null);
+    } else {
+      await handleGenerateContent(inputModal.type, topic);
+    }
+  };
+
+  // --- Render ---
   return (
     <>
+      {/* Floating Chat Button */}
       <motion.div
         className="fixed bottom-6 right-6 z-50"
         whileHover={{ scale: 1.05 }}
@@ -356,6 +374,7 @@ const handleInputSubmit = async (topic: string) => {
         </button>
       </motion.div>
 
+      {/* Chat Modal */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -367,10 +386,8 @@ const handleInputSubmit = async (topic: string) => {
               rounded-xl shadow-xl flex flex-col overflow-hidden z-50 border
               dark:border-gray-700"
           >
-            <div
-              className="p-3 border-b dark:border-gray-700 flex flex-wrap gap-2 
-              bg-gray-50 dark:bg-gray-800"
-            >
+            {/* Quick Prompts */}
+            <div className="p-3 border-b dark:border-gray-700 flex flex-wrap gap-2 bg-gray-50 dark:bg-gray-800">
               {quickPrompts().map((prompt, idx) => (
                 <motion.button
                   key={idx}
@@ -393,6 +410,7 @@ const handleInputSubmit = async (topic: string) => {
               ))}
             </div>
 
+            {/* Messages */}
             <div className="flex-1 overflow-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-800">
               <AnimatePresence>
                 {messages.map((m, i) => (
@@ -430,6 +448,7 @@ const handleInputSubmit = async (topic: string) => {
               <div ref={chatEndRef} />
             </div>
 
+            {/* Input */}
             <div className="p-3 border-t dark:border-gray-700 bg-white dark:bg-gray-800">
               <div className="flex gap-2">
                 <input
@@ -462,6 +481,7 @@ const handleInputSubmit = async (topic: string) => {
         )}
       </AnimatePresence>
 
+      {/* Selection Modal */}
       <AnimatePresence>
         {showSelection && (
           <SelectionModal
@@ -473,6 +493,7 @@ const handleInputSubmit = async (topic: string) => {
         )}
       </AnimatePresence>
 
+      {/* Note Modal */}
       {showNoteModal && generatedContent?.type === "note" && (
         <NoteModal
           initial={generatedContent.data}
@@ -482,24 +503,15 @@ const handleInputSubmit = async (topic: string) => {
           }}
           onSubmit={async (data) => {
             try {
-              const res = await api.post("/notes", data);
-              const newNote = res.data.data;
-
-              // Emit event with the complete note data
+             
               window.dispatchEvent(
-                new CustomEvent("noteCreated", {
-                  detail: newNote,
-                })
+                new CustomEvent("noteCreated", { detail: data })
               );
-
               setShowNoteModal(false);
               setGeneratedContent(null);
               setMessages((prev) => [
                 ...prev,
-                {
-                  role: "assistant",
-                  content: "✅ Note created successfully!",
-                },
+                { role: "assistant", content: "✅ Note created successfully!" },
               ]);
             } catch (err) {
               console.error("Failed to create note:", err);
@@ -508,6 +520,7 @@ const handleInputSubmit = async (topic: string) => {
         />
       )}
 
+      {/* Task Modal */}
       {showTaskModal && generatedContent?.type === "task" && (
         <TaskModal
           initial={generatedContent.data}
@@ -517,22 +530,15 @@ const handleInputSubmit = async (topic: string) => {
           }}
           onSubmit={async (data) => {
             try {
-              const res = await api.post("/tasks", data);
-              // Emit a custom event
+             
               window.dispatchEvent(
-                new CustomEvent("taskCreated", {
-                  detail: res.data.data,
-                })
+                new CustomEvent("taskCreated", { detail: data })
               );
-
               setShowTaskModal(false);
               setGeneratedContent(null);
               setMessages((prev) => [
                 ...prev,
-                {
-                  role: "assistant",
-                  content: "✅ Task created successfully!",
-                },
+                { role: "assistant", content: "✅ Task created successfully!" },
               ]);
             } catch (err) {
               console.error("Failed to create task:", err);
@@ -541,6 +547,7 @@ const handleInputSubmit = async (topic: string) => {
         />
       )}
 
+      {/* Flashcard Modal */}
       {showCardModal && generatedContent?.type === "flashcard" && (
         <CardModal
           initial={generatedContent.data}
@@ -550,22 +557,15 @@ const handleInputSubmit = async (topic: string) => {
           }}
           onSubmit={async (data) => {
             try {
-              const res = await api.post("/flashcards/cards", data);
-              // Emit a custom event
+             
               window.dispatchEvent(
-                new CustomEvent("flashcardCreated", {
-                  detail: res.data.data,
-                })
+                new CustomEvent("flashcardCreated", { detail: data })
               );
-
               setShowCardModal(false);
               setGeneratedContent(null);
               setMessages((prev) => [
                 ...prev,
-                {
-                  role: "assistant",
-                  content: "✅ Flashcards created successfully!",
-                },
+                { role: "assistant", content: "✅ Flashcards created successfully!" },
               ]);
             } catch (err) {
               console.error("Failed to create flashcards:", err);
@@ -573,6 +573,8 @@ const handleInputSubmit = async (topic: string) => {
           }}
         />
       )}
+
+      {/* Input Modal for topic */}
       <AnimatePresence>
         {inputModal && (
           <motion.div

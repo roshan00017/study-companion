@@ -5,7 +5,7 @@ const links = [
   { to: "/dashboard/notes", label: "Notes" },
   { to: "/dashboard/tasks", label: "Tasks" },
   { to: "/dashboard/flashcards", label: "Flashcards" },
-  { to: "/dashboard/profile", label: "Profile" },
+
 ];
 
 export default function Sidebar() {

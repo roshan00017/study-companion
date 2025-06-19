@@ -15,7 +15,7 @@ import TaskCard from "../../components/task/TaskCard";
 import TaskModal from "../../components/task/TaskModal";
 import type { Task, TaskPayload } from "../../types/task.type";
 import TaskViewModal from "../../components/task/TaskViewModal";
-import { useItemUpdates } from "../../components/hooks/useItemupdates";
+import { useItemUpdates } from "../../hooks/useItemupdates";
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);

@@ -19,6 +19,7 @@ interface Props {
   ) => void;
 }
 
+
 export default function TaskCard({
   task,
   onToggle,
@@ -28,7 +29,7 @@ export default function TaskCard({
   onSubtaskToggle,
 }: Props) {
   return (
-    <div className="bg-white rounded-lg shadow-md flex flex-col p-4 w-full">
+    <div className="bg-white rounded-lg shadow-md flex flex-col p-4 w-full h-56"> {/* <-- add h-56 */}
       <div className="flex justify-between items-start">
         <h3
           className={`text-lg font-semibold text-gray-800 ${
@@ -60,8 +61,11 @@ export default function TaskCard({
         {task.description}
       </p>
 
-      {task.subtasks.length > 0 && (
-        <div className="mt-2 space-y-1">
+   {task.subtasks.length > 0 && (
+        <div
+          className="mt-2 space-y-1 overflow-y-auto"
+          style={{ maxHeight: "4.5rem" }} // ~72px, adjust as needed to fit inside h-56 card
+        >
           {task.subtasks.map((subtask, idx) => (
             <div
               key={idx}
@@ -85,9 +89,10 @@ export default function TaskCard({
         </div>
       )}
 
-      <div className="flex gap-3 justify-end mt-4">
+      <div className="flex gap-3 justify-end mt-auto pt-4">
+        {/* mt-auto pushes buttons to the bottom */}
         <button
-          onClick={() => onToggle(task)} // Simplified - just pass the task
+          onClick={() => onToggle(task)}
           className={`flex items-center gap-1 text-sm ${
             task.completed
               ? "text-gray-600 hover:text-gray-700"
