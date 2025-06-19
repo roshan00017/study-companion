@@ -503,9 +503,14 @@ export default function ChatWidget() {
           }}
           onSubmit={async (data) => {
             try {
-             
+              const res = await api.post("/notes", data);
+              const newNote = res.data.data;
+
+              // Emit event with the complete note data
               window.dispatchEvent(
-                new CustomEvent("noteCreated", { detail: data })
+                new CustomEvent("noteCreated", {
+                  detail: newNote,
+                })
               );
               setShowNoteModal(false);
               setGeneratedContent(null);
@@ -530,9 +535,12 @@ export default function ChatWidget() {
           }}
           onSubmit={async (data) => {
             try {
-             
+              const res = await api.post("/tasks", data);
+              // Emit a custom event
               window.dispatchEvent(
-                new CustomEvent("taskCreated", { detail: data })
+                new CustomEvent("taskCreated", {
+                  detail: res.data.data,
+                })
               );
               setShowTaskModal(false);
               setGeneratedContent(null);
