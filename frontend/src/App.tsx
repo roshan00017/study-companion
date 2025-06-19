@@ -13,6 +13,7 @@ import TasksPage from "./pages/Tasks/TasksPage";
 import FlashcardsPage from "./pages/Flashcards/FlashCardsPage";
 import SetFlashcards from "./components/flashCards/SetFlashcards";
 import QuizPage from "./pages/Quiz/QuizPage";
+import { AuthProvider } from "./context/AuthContext";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -37,6 +38,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
 export default function App() {
   return (
     <BrowserRouter>
+    <AuthProvider>
       <ErrorBoundary>
         <Routes>
           <Route path="/" element={<RootRedirect />} />
@@ -93,6 +95,7 @@ export default function App() {
           </Route>
         </Routes>
       </ErrorBoundary>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
