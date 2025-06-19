@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 interface Props {
