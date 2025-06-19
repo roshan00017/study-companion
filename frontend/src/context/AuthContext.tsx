@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   id: string;
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMe = async () => {
@@ -38,16 +40,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     fetchMe();
   }, []);
-  const logout = async () => {
-    try {
-      await api.post("/auth/logout");
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      setUser(null);
-      window.location.href = "/login";
-    }
-  };
+const logout = async () => {
+  try {
+    await api.post("/auth/logout");
+     setUser(null);
+  } catch (error) {
+    console.error("Logout error:", error);
+  } finally {
+    setUser(null);
+    navigate("/login");
+  }
+};
   const login = (userData: User) => {
     setUser(userData);
   };
