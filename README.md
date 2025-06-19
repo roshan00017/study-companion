@@ -36,7 +36,7 @@
 - **TypeScript**
 - **MongoDB (Mongoose)** – Data storage
 - **JWT Auth** – JWT Auth – Custom auth with Firebase token verification
-- **OpenAI / Groq / Local AI (Pluggable)** – for chat and content generation
+- **OpenAI / Groq ** – for chat and content generation
 
 ---
 
