@@ -32,7 +32,7 @@ class AuthController {
       res.clearCookie("token");
       res.cookie("token", jwtToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure:true,
         sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000,
       });
@@ -48,7 +48,7 @@ class AuthController {
       res.clearCookie("token", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "none",
       });
 
       sendSuccess(res, "Logged out successfully");
