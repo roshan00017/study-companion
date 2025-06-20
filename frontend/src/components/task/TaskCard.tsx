@@ -62,12 +62,12 @@ export default function TaskCard({
         {task.description}
       </p>
 
-      {task.subtasks.length > 0 && (
+      {task.subtasks!.length > 0 && (
         <div
           className="mt-2 space-y-1 overflow-y-auto"
           style={{ maxHeight: "4.5rem" }} // ~72px, adjust as needed to fit inside h-56 card
         >
-          {task.subtasks.map((subtask, idx) => (
+          {task.subtasks?.map((subtask, idx) => (
             <div
               key={idx}
               className="flex items-center gap-2 text-sm text-gray-600"
