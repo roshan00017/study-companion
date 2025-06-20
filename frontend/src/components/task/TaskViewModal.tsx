@@ -111,27 +111,26 @@ export default function TaskViewModal({ task, onClose }: Props) {
           </div>
 
           {/* Subtasks */}
-          {task.subtasks.length > 0 && (
+            {(task.subtasks ?? []).length > 0 && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Subtasks
               </h3>
               <ul className="space-y-2">
-                {task.subtasks.map((subtask, idx) => (
+                {(task.subtasks ?? []).map((subtask, idx) => (
                   <li key={idx} className="flex items-center gap-2">
                     <span
                       className={`text-gray-600 dark:text-gray-400 ${
                         subtask.completed ? "line-through" : ""
                       }`}
                     >
-                      • {subtask.title}
+                      {subtask.title}
                     </span>
                   </li>
                 ))}
               </ul>
             </div>
           )}
-
           {/* Related Notes Section */}
           <div className="mt-6 border-t pt-6">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">

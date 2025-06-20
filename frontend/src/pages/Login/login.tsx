@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, googleProvider } from "../services/firebase";
+
 import {
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
-import api from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import { mapApiUserToUser } from "../utils/map.utils";
+
 import { FcGoogle } from "react-icons/fc";
+import { auth, googleProvider } from "../../services";
+import api from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
+import { mapApiUserToUser } from "../../utils";
 
 export default function Login() {
   const [email, setEmail] = useState("");

@@ -1,23 +1,24 @@
 import { useState } from "react";
-import type { TaskPayload } from "../../types/task.type";
+import type { Task } from "../../types/task.type";
 
 interface Props {
-  initial?: TaskPayload;
-  onSubmit: (data: TaskPayload) => void;
+  initial?: Task;
+  onSubmit: (data: Task) => void;
   onClose: () => void;
 }
 
 export default function TaskModal({ initial, onSubmit, onClose }: Props) {
-  const [form, setForm] = useState<TaskPayload>(
-    initial || {
-      title: "",
-      description: "",
-      dueDate: "",
-      priority: "medium",
-      completed: false,
-      subtasks: [],
-    }
-  );
+const [form, setForm] = useState<Task>(
+  initial || {
+    _id: "", 
+    title: "",
+    description: "",
+    dueDate: "",
+    priority: "medium",
+    completed: false,
+    subtasks: [],
+  }
+);
 
   const updateField = (name: string, value: any) =>
     setForm({ ...form, [name]: value });
