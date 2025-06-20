@@ -17,9 +17,14 @@ import { chatStorage } from "../../services/chat-storage";
 import CardModal from "../flashCards/CardModal";
 import TaskModal from "../task/TaskModal";
 import NoteModal from "../notes/NoteModal";
+import { useDispatch } from "react-redux";
+import { addNote } from "../../store/notesSlice";
 
 // --- ChatWidget Component ---
 export default function ChatWidget() {
+  // --- Redux ---
+  const dispatch = useDispatch();
+
   // --- State ---
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -424,12 +429,9 @@ export default function ChatWidget() {
               const res = await api.post("/notes", data);
               const newNote = res.data.data;
 
-              // Emit event with the complete note data
-              window.dispatchEvent(
-                new CustomEvent("noteCreated", {
-                  detail: newNote,
-                })
-              );
+              // Update Redux store with the new note
+              dispatch(addNote(newNote));
+             
               setShowNoteModal(false);
               setGeneratedContent(null);
               setMessages((prev) => [

@@ -7,17 +7,28 @@ import {
   createFlashcard,
   deleteCards,
 } from "../../services/api/flashcard.api";
-import type { Flashcard } from "../../types/flashcard.type";
+
 import CardModal from "./CardModal";
+import { useSelector, useDispatch } from "react-redux";
+import { type RootState } from "../../store";
+import { setFlashcards, addFlashcard, removeFlashcard, clearFlashcards } from "../../store/flashcardsSlice";
 
 export default function SetFlashcards() {
   const { setId } = useParams();
-  const [cards, setCards] = useState<Flashcard[]>([]);
+  const dispatch = useDispatch();
+  const { setId: reduxSetId, cards } = useSelector((state: RootState) => state.flashcards);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    loadCards();
+    if (setId && setId !== reduxSetId) {
+      loadCards();
+    }
+    // Clear cards when unmounting or setId changes
+    return () => {
+      dispatch(clearFlashcards());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setId]);
 
   const loadCards = async () => {
@@ -25,7 +36,7 @@ export default function SetFlashcards() {
     setLoading(true);
     try {
       const data = await getFlashcardsBySet(setId);
-      setCards(data);
+      dispatch(setFlashcards({ setId, cards: data }));
     } catch (err) {
       console.error("Failed to load flashcards:", err);
     } finally {
@@ -37,7 +48,7 @@ export default function SetFlashcards() {
     if (!setId) return;
     try {
       const newCard = await createFlashcard({ setId, ...data });
-      setCards((prev) => [...prev, newCard]);
+      dispatch(addFlashcard(newCard));
       setModalOpen(false);
     } catch (err) {
       console.error("Failed to create flashcard:", err);
@@ -51,7 +62,7 @@ export default function SetFlashcards() {
 
     try {
       await deleteCards(cardId);
-      setCards((prev) => prev.filter((card) => card._id !== cardId));
+      dispatch(removeFlashcard(cardId));
     } catch (err) {
       console.error("Failed to delete flashcard:", err);
       alert("Failed to delete flashcard. Please try again.");
@@ -69,7 +80,7 @@ export default function SetFlashcards() {
           <div className="flex gap-4">
             <Link
               to={`/dashboard/flashcards/${setId}/quiz`}
-              className="mt-4 md:mt-0 bg-blue-600 text-white px-6 py-3 rounded-lg 
+              className="mt-4 md:mt-0 bg-blue-600 text-white px-6 py-3 rounded-lg \
                 shadow-lg hover:shadow-xl transition-all duration-200"
             >
               Start Quiz
@@ -79,8 +90,8 @@ export default function SetFlashcards() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setModalOpen(true)}
-              className="mt-4 md:mt-0 bg-gradient-to-r from-green-600 to-green-700 
-                text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl 
+              className="mt-4 md:mt-0 bg-gradient-to-r from-green-600 to-green-700 \
+                text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl \
                 transition-all duration-200 flex items-center space-x-2"
             >
               <PlusIcon className="h-5 w-5" />
