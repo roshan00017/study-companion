@@ -8,17 +8,16 @@ interface Props {
 }
 
 export default function TaskModal({ initial, onSubmit, onClose }: Props) {
-const [form, setForm] = useState<Task>(
-  initial || {
-    _id: "", 
-    title: "",
-    description: "",
-    dueDate: "",
-    priority: "medium",
-    completed: false,
-    subtasks: [],
-  }
-);
+  const [form, setForm] = useState<Task>(
+    initial || {
+      title: "",
+      description: "",
+      dueDate: "",
+      priority: "medium",
+      completed: false,
+      subtasks: [],
+    } as Omit<Task, '_id'> as Task
+  );
 
   const updateField = (name: string, value: any) =>
     setForm({ ...form, [name]: value });
@@ -97,7 +96,15 @@ const [form, setForm] = useState<Task>(
             Cancel
           </button>
           <button
-            onClick={() => onSubmit(form)}
+            onClick={() => {
+              // Remove _id if it's empty or not present
+              const { _id, ...rest } = form;
+              if (!_id) {
+                onSubmit(rest as Task);
+              } else {
+                onSubmit(form);
+              }
+            }}
             className="px-4 py-2 bg-green-600 text-white rounded"
           >
             {initial ? "Update" : "Create"}
