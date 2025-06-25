@@ -30,7 +30,8 @@ class TaskController {
         throw new ApiError(401, "User not authenticated");
       }
 
-      const tasks = await taskService.getTasks(userId);
+      const groupId = req.query.groupId as string | undefined;
+      const tasks = await taskService.getTasks(userId, groupId);
       sendSuccess(res, "Tasks fetched successfully", tasks);
     } catch (error) {
       next(error);

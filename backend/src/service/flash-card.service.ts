@@ -16,8 +16,10 @@ class FlashcardService {
     return await FlashcardSetModel.create({ userId, ...setData });
   }
 
-  async getSets(userId: string): Promise<IFlashcardSet[]> {
-    return await FlashcardSetModel.find({ userId });
+  async getSets(userId: string, groupId?: string): Promise<IFlashcardSet[]> {
+    const filter: any = { userId };
+    if (groupId) filter.groupId = groupId;
+    return await FlashcardSetModel.find(filter);
   }
 
   async createFlashcard(

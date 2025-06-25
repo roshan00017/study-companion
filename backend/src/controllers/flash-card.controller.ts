@@ -35,7 +35,8 @@ class FlashcardController {
         throw new ApiError(401, "User not authenticated");
       }
 
-      const sets = await flashcardService.getSets(userId);
+      const groupId = req.query.groupId as string | undefined;
+      const sets = await flashcardService.getSets(userId, groupId);
       sendSuccess(res, "Flashcard sets fetched successfully", sets);
     } catch (error) {
       next(error);

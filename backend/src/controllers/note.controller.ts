@@ -30,7 +30,8 @@ class NoteController {
         throw new ApiError(401, "User not authenticated");
       }
 
-      const notes = await noteService.getNotes(userId);
+      const groupId = req.query.groupId as string | undefined;
+      const notes = await noteService.getNotes(userId, groupId);
       sendSuccess(res, "Notes fetched successfully", notes);
     } catch (error) {
       next(error);
