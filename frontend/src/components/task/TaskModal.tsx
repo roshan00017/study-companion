@@ -17,6 +17,7 @@ export default function TaskModal({ initial, onSubmit, onClose }: Props) {
         priority: "medium",
         completed: false,
         subtasks: [],
+        groupId: "",
       } as Omit<Task, "_id"> as Task)
   );
 

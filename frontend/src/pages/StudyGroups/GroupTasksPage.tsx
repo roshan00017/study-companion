@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { createTask, getTasks } from "../../services/api/task.api";
 import TaskCard from "../../components/task/TaskCard";
 import TaskModal from "../../components/task/TaskModal";
-import type { Task, TaskPayload } from "../../types/task.type";
+import type { Task } from "../../types/task.type";
 import TaskViewModal from "../../components/task/TaskViewModal";
 
 export default function GroupTasksPage() {
@@ -31,7 +31,7 @@ export default function GroupTasksPage() {
     }
   };
 
-  const handleSave = async (data: TaskPayload) => {
+  const handleSave = async (data: Task) => {
     // Attach groupId to the payload
     if (!groupId) return;
     try {
@@ -90,7 +90,20 @@ export default function GroupTasksPage() {
         )}
         {modalOpen && (
           <TaskModal
-            initial={editingTask || undefined}
+            initial={
+              editingTask
+                ? {
+                    _id: editingTask._id,
+                    title: editingTask.title,
+                    description: editingTask.description,
+                    dueDate: editingTask.dueDate,
+                    priority: editingTask.priority,
+                    completed: editingTask.completed,
+                    subtasks: editingTask.subtasks,
+                    groupId: editingTask.groupId,
+                  }
+                : undefined
+            }
             onClose={closeModal}
             onSubmit={handleSave}
           />

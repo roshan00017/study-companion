@@ -3,6 +3,7 @@ export interface SubtaskPayload {
   completed?: boolean;
 }
 export interface TaskPayload {
+  _id?: string;
   title: string;
   description?: string;
   dueDate?: string;
@@ -20,5 +21,6 @@ export interface Task {
   priority?: string;
   dueDate?: string;
   subtasks?: any[];
+  groupId?: string;
   // Add other fields as needed
 }
