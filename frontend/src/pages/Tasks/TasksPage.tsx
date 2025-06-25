@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { type RootState } from "../../store";
+import { setTasks, addTask, updateTask as updateTaskAction, removeTask } from "../../store/tasksSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   PlusIcon,
@@ -13,34 +16,33 @@ import {
 } from "../../services/api/task.api";
 import TaskCard from "../../components/task/TaskCard";
 import TaskModal from "../../components/task/TaskModal";
-import type { Task, TaskPayload } from "../../types/task.type";
+import type { Task } from "../../types/task.type";
 import TaskViewModal from "../../components/task/TaskViewModal";
-import { useItemUpdates } from "../../hooks/useItemupdates";
+// import { useItemUpdates } from "../../hooks/useItemupdates";
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
+  const dispatch = useDispatch();
+  const tasks = useSelector((state: RootState) => state.tasks.items);
+  // filteredTasks is now computed with useMemo below
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
-  useItemUpdates("task", (newTask) => {
-    setTasks((prev) => [newTask, ...prev]);
-  });
+  // useItemUpdates("task", (newTask) => {
+  //   dispatch(addTask(newTask));
+  // });
 
   useEffect(() => {
     loadTasks();
   }, []);
 
-  useEffect(() => {
+  const filteredTasks = useMemo(() => {
     const searchText = search.toLowerCase();
-    setFilteredTasks(
-      tasks.filter(
-        (task) =>
-          task.title.toLowerCase().includes(searchText) ||
-          task.description?.toLowerCase().includes(searchText)
-      )
+    return tasks.filter(
+      (task) =>
+        task.title.toLowerCase().includes(searchText) ||
+        task.description?.toLowerCase().includes(searchText)
     );
   }, [search, tasks]);
 
@@ -48,7 +50,7 @@ export default function TasksPage() {
     setLoading(true);
     try {
       const data = await getTasks();
-      setTasks(data);
+      dispatch(setTasks(data));
     } catch (err) {
       console.error("Failed to load tasks:", err);
     } finally {
@@ -56,16 +58,14 @@ export default function TasksPage() {
     }
   };
 
-  const handleSave = async (data: TaskPayload) => {
+  const handleSave = async (data: Task) => {
     try {
       if (editingTask) {
         const updated = await updateTask(editingTask._id, data);
-        setTasks((prev) =>
-          prev.map((t) => (t._id === updated._id ? updated : t))
-        );
+        dispatch(updateTaskAction(updated));
       } else {
         const created = await createTask(data);
-        setTasks((prev) => [created, ...prev]);
+        dispatch(addTask(created));
       }
       closeModal();
     } catch (err) {
@@ -79,7 +79,7 @@ export default function TasksPage() {
 
     try {
       await deleteTask(id);
-      setTasks((prev) => prev.filter((t) => t._id !== id));
+      dispatch(removeTask(id));
     } catch (err) {
       console.error("Failed to delete task:", err);
       alert("Failed to delete task. Please try again.");
@@ -94,7 +94,7 @@ export default function TasksPage() {
       const task = tasks.find((t) => t._id === taskId);
       if (!task) return;
 
-      const updatedSubtasks = [...task.subtasks];
+     const updatedSubtasks = task.subtasks ? [...task.subtasks] : [];
       updatedSubtasks[subtaskIndex] = {
         ...updatedSubtasks[subtaskIndex],
         completed,
@@ -106,13 +106,13 @@ export default function TasksPage() {
       };
 
       // Optimistic update
-      setTasks((prev) => prev.map((t) => (t._id === taskId ? updatedTask : t)));
+      dispatch(updateTaskAction(updatedTask)); // Optimistic update
 
       // Call API
       const response = await updateTask(taskId, updatedTask);
 
       // Update with server response
-      setTasks((prev) => prev.map((t) => (t._id === taskId ? response : t)));
+      dispatch(updateTaskAction(response)); // Update with server response
     } catch (err) {
       console.error("Failed to update subtask:", err);
       alert("Failed to update subtask. Please try again.");
@@ -124,9 +124,7 @@ export default function TasksPage() {
         ...task,
         completed: !task.completed,
       });
-      setTasks((prev) =>
-        prev.map((t) => (t._id === updated._id ? updated : t))
-      );
+      dispatch(updateTaskAction(updated));
     } catch (err) {
       console.error("Failed to update task:", err);
       alert("Failed to update task. Please try again.");

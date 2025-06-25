@@ -1,14 +1,13 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  ChatBubbleOvalLeftEllipsisIcon as ChatIcon,
-  XMarkIcon,
-  PaperAirplaneIcon,
-} from "@heroicons/react/24/outline";
+import ChatButton from "./ChatButton";
 import api from "../../services/api";
 import SelectionModal from "./SelectionModal";
-import MessageContent from "./MessageContent";
+import ChatQuickPrompts from "./ChatQuickPrompts";
+import ChatMessages from "./ChatMessages";
+import ChatInput from "./ChatInput";
+import InputTopicModal from "./InputTopicModal";
 import type {
   Message,
   QuickPrompt,
@@ -18,9 +17,14 @@ import { chatStorage } from "../../services/chat-storage";
 import CardModal from "../flashCards/CardModal";
 import TaskModal from "../task/TaskModal";
 import NoteModal from "../notes/NoteModal";
+import { useDispatch } from "react-redux";
+import { addNote } from "../../store/notesSlice";
 
 // --- ChatWidget Component ---
 export default function ChatWidget() {
+  // --- Redux ---
+  const dispatch = useDispatch();
+
   // --- State ---
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -355,24 +359,7 @@ export default function ChatWidget() {
   return (
     <>
       {/* Floating Chat Button */}
-      <motion.div
-        className="fixed bottom-6 right-6 z-50"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <button
-          className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3 
-            rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 
-            flex items-center justify-center"
-          onClick={() => setIsOpen((prev) => !prev)}
-        >
-          {isOpen ? (
-            <XMarkIcon className="h-6 w-6" />
-          ) : (
-            <ChatIcon className="h-6 w-6" />
-          )}
-        </button>
-      </motion.div>
+      <ChatButton isOpen={isOpen} onClick={() => setIsOpen((prev) => !prev)} />
 
       {/* Chat Modal */}
       <AnimatePresence>
@@ -387,95 +374,31 @@ export default function ChatWidget() {
               dark:border-gray-700"
           >
             {/* Quick Prompts */}
-            <div className="p-3 border-b dark:border-gray-700 flex flex-wrap gap-2 bg-gray-50 dark:bg-gray-800">
-              {quickPrompts().map((prompt, idx) => (
-                <motion.button
-                  key={idx}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="text-sm bg-white dark:bg-gray-700 hover:bg-gray-50 
-                    dark:hover:bg-gray-600 px-3 py-1.5 rounded-lg shadow-sm 
-                    border border-gray-200 dark:border-gray-600 transition-colors
-                    text-gray-700 dark:text-gray-200"
-                  onClick={() => {
-                    if (prompt.action) {
-                      prompt.action();
-                    } else if (prompt.text) {
-                      send(prompt.text);
-                    }
-                  }}
-                >
-                  {prompt.label}
-                </motion.button>
-              ))}
-            </div>
+            <ChatQuickPrompts
+              prompts={quickPrompts()}
+              onPrompt={(prompt) => {
+                if (prompt.action) {
+                  prompt.action();
+                } else if (prompt.text) {
+                  send(prompt.text);
+                }
+              }}
+            />
 
             {/* Messages */}
-            <div className="flex-1 overflow-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-800">
-              <AnimatePresence>
-                {messages.map((m, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className={`flex ${
-                      m.role === "user" ? "justify-end" : "justify-start"
-                    }`}
-                  >
-                    <div
-                      className={`inline-block max-w-[80%] px-4 py-2 rounded-xl
-                        ${
-                          m.role === "user"
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                        }`}
-                    >
-                      <MessageContent content={m.content} />
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              {loading && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-gray-400 italic px-4"
-                >
-                  Thinking...
-                </motion.p>
-              )}
-              <div ref={chatEndRef} />
-            </div>
+            <ChatMessages messages={messages} loading={loading} chatEndRef={chatEndRef} />
 
             {/* Input */}
             <div className="p-3 border-t dark:border-gray-700 bg-white dark:bg-gray-800">
-              <div className="flex gap-2">
-                <input
-                  className="flex-1 px-4 py-2 rounded-xl border-2 border-gray-200 
-                    dark:border-gray-700 bg-white dark:bg-gray-700
-                    text-gray-800 dark:text-gray-200 
-                    placeholder-gray-500 dark:placeholder-gray-400
-                    focus:ring-2 focus:ring-blue-500 focus:border-transparent 
-                    transition-all duration-200"
-                  placeholder="Ask me something..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && send()}
-                />
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => send()}
-                  disabled={loading}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700
-                    text-white rounded-xl shadow-sm hover:shadow-md
-                    transition-all duration-200 disabled:opacity-50
-                    flex items-center justify-center"
-                >
-                  <PaperAirplaneIcon className="h-5 w-5" />
-                </motion.button>
-              </div>
+              <ChatInput
+                input={input}
+                loading={loading}
+                onInputChange={(e) => setInput(e.target.value)}
+                onSend={() => send()}
+                onInputKeyDown={(e) => {
+                  if (e.key === "Enter") send();
+                }}
+              />
             </div>
           </motion.div>
         )}
@@ -506,12 +429,9 @@ export default function ChatWidget() {
               const res = await api.post("/notes", data);
               const newNote = res.data.data;
 
-              // Emit event with the complete note data
-              window.dispatchEvent(
-                new CustomEvent("noteCreated", {
-                  detail: newNote,
-                })
-              );
+              // Update Redux store with the new note
+              dispatch(addNote(newNote));
+             
               setShowNoteModal(false);
               setGeneratedContent(null);
               setMessages((prev) => [
@@ -585,54 +505,12 @@ export default function ChatWidget() {
       {/* Input Modal for topic */}
       <AnimatePresence>
         {inputModal && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-          >
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-96 shadow-xl">
-              <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">
-                {inputModal.title}
-              </h3>
-              <input
-                type="text"
-                placeholder="Enter topic..."
-                value={inputModal.topic}
-                onChange={(e) =>
-                  setInputModal({
-                    ...inputModal,
-                    topic: e.target.value,
-                  })
-                }
-                className="w-full px-4 py-2 rounded-lg border-2 border-gray-200 
-                dark:border-gray-700 bg-white dark:bg-gray-700
-                text-gray-800 dark:text-gray-200 mb-4"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && inputModal.topic) {
-                    handleInputSubmit(inputModal.topic);
-                  }
-                }}
-              />
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={() => setInputModal(null)}
-                  className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400
-                  hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => handleInputSubmit(inputModal.topic)}
-                  disabled={!inputModal.topic}
-                  className="px-4 py-2 rounded-lg bg-blue-600 text-white
-                  disabled:opacity-50 hover:bg-blue-700"
-                >
-                  Generate
-                </button>
-              </div>
-            </div>
-          </motion.div>
+          <InputTopicModal
+            inputModal={inputModal}
+            onChange={(topic) => setInputModal({ ...inputModal, topic })}
+            onClose={() => setInputModal(null)}
+            onSubmit={handleInputSubmit}
+          />
         )}
       </AnimatePresence>
     </>

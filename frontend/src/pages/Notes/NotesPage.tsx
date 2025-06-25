@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { type RootState } from "../../store";
+import { setNotes, addNote, updateNote as updateNoteAction, removeNote } from "../../store/notesSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   PlusIcon,
@@ -14,39 +17,28 @@ import {
 import NoteCard from "../../components/notes/NoteCard";
 import NoteModal from "../../components/notes/NoteModal";
 import ViewNoteModal from "../../components/notes/ViewNoteModal";
-import type { NotePayload } from "../../types/note.type";
-import { useItemUpdates } from "../../hooks/useItemupdates";
+import type { Note, NotePayload } from "../../types/note.type";
 
-interface Note {
-  _id: string;
-  title: string;
-  content: string;
-  taskId?: string;
-}
 
 export default function NotesPage() {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
+  const dispatch = useDispatch();
+  const notes = useSelector((state: RootState) => state.notes.items);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [viewingNote, setViewingNote] = useState<Note | null>(null);
-  useItemUpdates("note", (newNote) => {
-    setNotes((prev) => [newNote, ...prev]);
-  });
+
   useEffect(() => {
     loadNotes();
   }, []);
 
-  useEffect(() => {
+  const filteredNotes = useMemo(() => {
     const searchText = search.toLowerCase();
-    setFilteredNotes(
-      notes.filter(
-        (note) =>
-          note.title.toLowerCase().includes(searchText) ||
-          note.content.toLowerCase().includes(searchText)
-      )
+    return notes.filter(
+      (note) =>
+        note.title.toLowerCase().includes(searchText) ||
+        note.content.toLowerCase().includes(searchText)
     );
   }, [search, notes]);
 
@@ -54,7 +46,7 @@ export default function NotesPage() {
     setLoading(true);
     try {
       const data = await getNotes();
-      setNotes(data);
+      dispatch(setNotes(data));
     } catch (err) {
       console.error("Failed to load notes:", err);
     } finally {
@@ -66,12 +58,10 @@ export default function NotesPage() {
     try {
       if (editingNote) {
         const updated = await updateNote(editingNote._id, data);
-        setNotes((prev) =>
-          prev.map((n) => (n._id === updated._id ? updated : n))
-        );
+        dispatch(updateNoteAction(updated));
       } else {
         const created = await createNote(data);
-        setNotes((prev) => [created, ...prev]);
+        dispatch(addNote(created));
       }
       closeModal();
     } catch (err) {
@@ -85,7 +75,7 @@ export default function NotesPage() {
 
     try {
       await deleteNote(id);
-      setNotes((prev) => prev.filter((n) => n._id !== id));
+      dispatch(removeNote(id));
     } catch (err) {
       console.error("Failed to delete note:", err);
       alert("Failed to delete note. Please try again.");
