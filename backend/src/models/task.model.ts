@@ -19,6 +19,7 @@ const TaskSchema = new Schema<ITask>(
     },
     completed: { type: Boolean, default: false },
     subtasks: { type: [SubTaskSchema], default: [] },
+    groupId: { type: String, require: false },
   },
   { timestamps: true }
 );

@@ -14,6 +14,7 @@ export interface ITask {
   subtasks: ISubTask[];
   createdAt?: Date;
   updatedAt?: Date;
+  groupId?: string;
 }
 
 export interface CreateTaskDto {
@@ -22,6 +23,7 @@ export interface CreateTaskDto {
   dueDate?: Date;
   priority?: "low" | "medium" | "high";
   subtasks?: ISubTask[];
+  groupId?: string;
 }
 
 export interface UpdateTaskDto {

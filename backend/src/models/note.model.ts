@@ -12,6 +12,7 @@ const NoteSchema = new Schema<INote>(
       ref: "Task",
       required: false,
     },
+    groupId: { type: String, require: false },
   },
   { timestamps: true }
 );

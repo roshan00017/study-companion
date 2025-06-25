@@ -5,12 +5,13 @@ const FlashcardSchema = new Schema<IFlashcard>(
   {
     userId: { type: String, required: true },
     setId: {
-      type:String,
+      type: String,
       ref: "FlashcardSet",
       required: true,
     },
     question: { type: String, required: true },
     answer: { type: String, required: true },
+    groupId: { type: String, require: false },
   },
   { timestamps: true }
 );

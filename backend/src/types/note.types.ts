@@ -7,6 +7,7 @@ export interface INote {
   taskId?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
+  groupId?: string;
 }
 
 export interface CreateNoteDto {
@@ -14,6 +15,7 @@ export interface CreateNoteDto {
   content: string;
   tags?: string[];
   taskId?: string | null;
+  groupId?: string;
 }
 
 export interface UpdateNoteDto {
