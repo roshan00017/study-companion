@@ -5,7 +5,7 @@ const links = [
   { to: "/dashboard/notes", label: "Notes" },
   { to: "/dashboard/tasks", label: "Tasks" },
   { to: "/dashboard/flashcards", label: "Flashcards" },
-
+  { to: "/dashboard/study-groups", label: "Study Groups" },
 ];
 
 export default function Sidebar() {

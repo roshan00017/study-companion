@@ -9,6 +9,7 @@ export interface TaskPayload {
   priority?: "low" | "medium" | "high";
   completed?: boolean;
   subtasks?: SubtaskPayload[];
+  groupId?: string;
 }
 
 export interface Task {

@@ -14,6 +14,9 @@ import FlashcardsPage from "./pages/Flashcards/FlashCardsPage";
 import SetFlashcards from "./components/flashCards/SetFlashcards";
 import QuizPage from "./pages/Quiz/QuizPage";
 import { AuthProvider } from "./context/AuthContext";
+import StudyGroupsPage from "./pages/StudyGroups/StudyGroupsPage";
+import { GroupDashboardPage } from "./pages/StudyGroups";
+import GroupTasksPage from "./pages/StudyGroups/GroupTasksPage";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -38,63 +41,87 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
 export default function App() {
   return (
     <BrowserRouter>
-    <AuthProvider>
-      <ErrorBoundary>
-        <Routes>
-          <Route path="/" element={<RootRedirect />} />
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/dashboard"
-            element={
-              <RequireAuth>
-                <DashboardLayout />
-              </RequireAuth>
-            }
-          >
-            <Route index element={<DashboardHome />} />
+      <AuthProvider>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<RootRedirect />} />
+            <Route path="/login" element={<Login />} />
             <Route
-              path="notes"
+              path="/dashboard"
               element={
                 <RequireAuth>
-                  <NotesPage />
+                  <DashboardLayout />
                 </RequireAuth>
               }
-            />
-            <Route
-              path="flashcards"
-              element={
-                <RequireAuth>
-                  <FlashcardsPage />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="flashcards/:setId"
-              element={
-                <RequireAuth>
-                  <SetFlashcards />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="flashcards/:setId/quiz"
-              element={
-                <RequireAuth>
-                  <QuizPage />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="tasks"
-              element={
-                <RequireAuth>
-                  <TasksPage />
-                </RequireAuth>
-              }
-            />
-          </Route>
-        </Routes>
-      </ErrorBoundary>
+            >
+              <Route index element={<DashboardHome />} />
+              <Route
+                path="notes"
+                element={
+                  <RequireAuth>
+                    <NotesPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="flashcards"
+                element={
+                  <RequireAuth>
+                    <FlashcardsPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="flashcards/:setId"
+                element={
+                  <RequireAuth>
+                    <SetFlashcards />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="flashcards/:setId/quiz"
+                element={
+                  <RequireAuth>
+                    <QuizPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="tasks"
+                element={
+                  <RequireAuth>
+                    <TasksPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="study-groups"
+                element={
+                  <RequireAuth>
+                    <StudyGroupsPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="study-groups/:groupId"
+                element={
+                  <RequireAuth>
+                    <GroupDashboardPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="study-groups/:groupId/tasks"
+                element={
+                  <RequireAuth>
+                    <GroupTasksPage />
+                  </RequireAuth>
+                }
+              />
+            </Route>
+          </Routes>
+        </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
   );
