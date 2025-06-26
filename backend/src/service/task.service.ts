@@ -7,9 +7,10 @@ class TaskService {
   }
 
   async getTasks(userId: string, groupId?: string): Promise<ITask[]> {
-    const filter: any = { userId };
-    if (groupId) filter.groupId = groupId;
-    return await TaskModel.find(filter).sort({ updatedAt: -1 });
+    if (groupId) {
+      return await TaskModel.find({ groupId }).sort({ updatedAt: -1 });
+    }
+    return await TaskModel.find({ userId }).sort({ updatedAt: -1 });
   }
 
   async getTaskById(taskId: string, userId: string): Promise<ITask | null> {

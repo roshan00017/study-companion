@@ -15,9 +15,10 @@ class NoteService {
   }
 
   async getNotes(userId: string, groupId?: string): Promise<INote[]> {
-    const filter: any = { userId };
-    if (groupId) filter.groupId = groupId;
-    return await NoteModel.find(filter).sort({ updatedAt: -1 });
+    if (groupId) {
+      return await NoteModel.find({ groupId }).sort({ updatedAt: -1 });
+    }
+    return await NoteModel.find({ userId }).sort({ updatedAt: -1 });
   }
 
   async getNoteById(noteId: string, userId: string): Promise<INote | null> {
