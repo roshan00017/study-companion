@@ -17,6 +17,7 @@ import { AuthProvider } from "./context/AuthContext";
 import StudyGroupsPage from "./pages/StudyGroups/StudyGroupsPage";
 import { GroupDashboardPage } from "./pages/StudyGroups";
 import GroupTasksPage from "./pages/StudyGroups/GroupTasksPage";
+import GroupNotesPage from "./pages/StudyGroups/GroupNotesPage";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -116,6 +117,14 @@ export default function App() {
                 element={
                   <RequireAuth>
                     <GroupTasksPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="study-groups/:groupId/notes"
+                element={
+                  <RequireAuth>
+                    <GroupNotesPage />
                   </RequireAuth>
                 }
               />

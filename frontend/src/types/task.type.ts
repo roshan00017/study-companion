@@ -14,13 +14,14 @@ export interface TaskPayload {
 }
 
 export interface Task {
-  _id: string;
+  _id?: string;
   title: string;
-  description: string;
-  completed: boolean;
-  priority?: string;
+  description?: string;
   dueDate?: string;
-  subtasks?: any[];
+  priority?: "low" | "medium" | "high";
+  completed?: boolean;
+  subtasks?: SubtaskPayload[];
   groupId?: string;
+
   // Add other fields as needed
 }

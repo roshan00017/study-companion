@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactQuill from "react-quill-new";
 import type { NotePayload } from "../../types/note.type";
-import { getTasks } from "../../services/api/task.api";
+import { getNotes } from "../../services/api/note.api";
 
 interface Props {
   initial?: NotePayload;
@@ -27,7 +27,7 @@ export default function NoteModal({ initial, onSubmit, onClose }: Props) {
 
   useEffect(() => {
     (async () => {
-      const taskList = await getTasks();
+      const taskList = await getNotes();
       setTasks(taskList);
     })();
   }, []);

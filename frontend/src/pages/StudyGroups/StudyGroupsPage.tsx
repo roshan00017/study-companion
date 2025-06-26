@@ -69,7 +69,7 @@ export default function StudyGroupsPage() {
               <div
                 key={group._id}
                 className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col gap-2 transition-transform hover:scale-[1.02] hover:shadow-xl border border-gray-100 dark:border-gray-700 cursor-pointer"
-                onClick={() => navigate(`/dashboard/study-groups/${group._id}`)}
+                onClick={() => navigate(`/dashboard/study-groups/${group._id}`, { state: { groupName: group.name } })}
               >
                 <div className="font-bold text-xl text-green-700 dark:text-green-400 mb-1">
                   {group.name}

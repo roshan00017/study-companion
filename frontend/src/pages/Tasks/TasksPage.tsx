@@ -1,7 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { type RootState } from "../../store";
-import { setTasks, addTask, updateTask as updateTaskAction, removeTask } from "../../store/tasksSlice";
+import {
+  setTasks,
+  addTask,
+  updateTask as updateTaskAction,
+  removeTask,
+} from "../../store/tasksSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   PlusIcon,
@@ -61,7 +66,7 @@ export default function TasksPage() {
   const handleSave = async (data: Task) => {
     try {
       if (editingTask) {
-        const updated = await updateTask(editingTask._id, data);
+        const updated = await updateTask(editingTask._id!, data);
         dispatch(updateTaskAction(updated));
       } else {
         const created = await createTask(data);
@@ -94,7 +99,7 @@ export default function TasksPage() {
       const task = tasks.find((t) => t._id === taskId);
       if (!task) return;
 
-     const updatedSubtasks = task.subtasks ? [...task.subtasks] : [];
+      const updatedSubtasks = task.subtasks ? [...task.subtasks] : [];
       updatedSubtasks[subtaskIndex] = {
         ...updatedSubtasks[subtaskIndex],
         completed,
@@ -120,7 +125,7 @@ export default function TasksPage() {
   };
   const handleToggle = async (task: Task) => {
     try {
-      const updated = await updateTask(task._id, {
+      const updated = await updateTask(task._id!, {
         ...task,
         completed: !task.completed,
       });

@@ -1,6 +1,7 @@
 export interface NotePayload {
   title: string;
   content: string;
+  groupId?: string;
   taskId?: string;
 }
 
@@ -9,4 +10,5 @@ export interface Note {
   title: string;
   content: string;
   taskId?: string;
+  groupId?: string;
 }

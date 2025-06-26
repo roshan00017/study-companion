@@ -28,7 +28,7 @@ export default function TaskViewModal({ task, onClose }: Props) {
 
   const loadNotes = async () => {
     try {
-      const data = await getNotesByTaskId(task._id);
+      const data = await getNotesByTaskId(task._id!);
       setNotes(data);
     } catch (err) {
       console.error("Failed to load notes:", err);
@@ -111,7 +111,7 @@ export default function TaskViewModal({ task, onClose }: Props) {
           </div>
 
           {/* Subtasks */}
-            {(task.subtasks ?? []).length > 0 && (
+          {(task.subtasks ?? []).length > 0 && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Subtasks

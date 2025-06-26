@@ -28,9 +28,7 @@ export default function TaskCard({
   onSubtaskToggle,
 }: Props) {
   return (
-    <div
-      className="bg-white rounded-lg shadow-md flex flex-col p-4 w-full h-56 overflow-hidden"
-    >
+    <div className="bg-white rounded-lg shadow-md flex flex-col p-4 w-full h-56 overflow-hidden">
       <div className="flex justify-between items-start">
         <h3
           className={`text-lg font-semibold text-gray-800 ${
@@ -74,7 +72,7 @@ export default function TaskCard({
             >
               <button
                 onClick={() =>
-                  onSubtaskToggle?.(task._id, idx, !subtask.completed)
+                  onSubtaskToggle?.(task._id!, idx, !subtask.completed)
                 }
                 className={`flex items-center hover:text-gray-800 transition-colors ${
                   subtask.completed ? "text-green-600" : "text-gray-400"
@@ -110,7 +108,7 @@ export default function TaskCard({
           Edit
         </button>
         <button
-          onClick={() => onDelete(task._id)}
+          onClick={() => onDelete(task._id!)}
           className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700 transition-colors"
         >
           <TrashIcon className="h-4 w-4" />

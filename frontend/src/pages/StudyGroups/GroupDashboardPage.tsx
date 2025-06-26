@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   getGroupMembers,
   addUserToGroup,
@@ -36,11 +36,17 @@ export default function GroupDashboardPage() {
   const [adding, setAdding] = useState(false);
   const [removing, setRemoving] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const location = useLocation();
+  const [groupName, setGroupName] = useState<string>(
+    location.state?.groupName || ""
+  );
 
   useEffect(() => {
     fetchMembers();
+    if (location.state && location.state.groupName)
+      setGroupName(location.state.groupName);
     // eslint-disable-next-line
-  }, [groupId, user]);
+  }, [groupId, user, location.state]);
 
   const fetchMembers = async () => {
     setLoading(true);
@@ -114,7 +120,7 @@ export default function GroupDashboardPage() {
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-            Study Group Dashboard
+            {groupName ? `${groupName} Dashboard` : "Study Group Dashboard"}
           </h1>
           {isAdmin && (
             <div className="w-full md:w-auto mt-4 md:mt-0 flex gap-2 items-center relative">
@@ -122,7 +128,7 @@ export default function GroupDashboardPage() {
                 <input
                   type="text"
                   value={addUserEmail}
-                  onChange={e => {
+                  onChange={(e) => {
                     setAddUserEmail(e.target.value);
                     setSearchResult(null);
                     setUserSelected(false);
@@ -135,34 +141,55 @@ export default function GroupDashboardPage() {
                 <button
                   onClick={handleAddUser}
                   className="px-4 py-2 bg-green-600 text-white rounded-r shadow hover:bg-green-700 transition text-sm"
-                  disabled={adding || !(searchResult && addUserEmail === searchResult.email && userSelected)}
+                  disabled={
+                    adding ||
+                    !(
+                      searchResult &&
+                      addUserEmail === searchResult.email &&
+                      userSelected
+                    )
+                  }
                   style={{ minWidth: 90 }}
                 >
                   {adding ? "Adding..." : "Add"}
                 </button>
-                {addUserEmail && searchResult && addUserEmail === searchResult.email && !searchError && !userSelected && (
-                  <div className="absolute top-10 left-0 w-full bg-white border border-gray-200 rounded shadow-lg z-10">
-                    <div className="p-3 flex flex-col cursor-pointer hover:bg-green-50"
-                      onClick={() => {
-                        setAddUserEmail(searchResult.email);
-                        setSearchResult(searchResult);
-                        setUserSelected(true);
-                      }}
-                    >
-                      <span className="font-semibold text-gray-800">{searchResult.name}</span>
-                      <span className="text-sm text-gray-500">{searchResult.email}</span>
+                {addUserEmail &&
+                  searchResult &&
+                  addUserEmail === searchResult.email &&
+                  !searchError &&
+                  !userSelected && (
+                    <div className="absolute top-10 left-0 w-full bg-white border border-gray-200 rounded shadow-lg z-10">
+                      <div
+                        className="p-3 flex flex-col cursor-pointer hover:bg-green-50"
+                        onClick={() => {
+                          setAddUserEmail(searchResult.email);
+                          setSearchResult(searchResult);
+                          setUserSelected(true);
+                        }}
+                      >
+                        <span className="font-semibold text-gray-800">
+                          {searchResult.name}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {searchResult.email}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                )}
-                {addUserEmail && (!searchResult || addUserEmail !== searchResult.email) && (
-                  <div className="absolute top-10 left-0 w-full bg-white border border-gray-200 rounded shadow-lg z-10">
-                    {searchError ? (
-                      <div className="p-3 text-sm text-red-500">{searchError}</div>
-                    ) : (
-                      <div className="p-3 text-sm text-gray-400">Type to search...</div>
-                    )}
-                  </div>
-                )}
+                  )}
+                {addUserEmail &&
+                  (!searchResult || addUserEmail !== searchResult.email) && (
+                    <div className="absolute top-10 left-0 w-full bg-white border border-gray-200 rounded shadow-lg z-10">
+                      {searchError ? (
+                        <div className="p-3 text-sm text-red-500">
+                          {searchError}
+                        </div>
+                      ) : (
+                        <div className="p-3 text-sm text-gray-400">
+                          Type to search...
+                        </div>
+                      )}
+                    </div>
+                  )}
               </div>
             </div>
           )}
@@ -172,14 +199,22 @@ export default function GroupDashboardPage() {
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 lg:mb-0">
             <div
               className="cursor-pointer bg-white rounded-xl shadow-lg p-8 flex flex-col items-center justify-center border border-gray-100 hover:shadow-xl hover:scale-[1.03] transition"
-              onClick={() => navigate(`/dashboard/study-groups/${groupId}/tasks`)}
+              onClick={() =>
+                navigate(`/dashboard/study-groups/${groupId}/tasks`, {
+                  state: { groupName },
+                })
+              }
             >
               <span className="text-3xl mb-2">📝</span>
               <span className="font-bold text-lg">Tasks</span>
             </div>
             <div
               className="cursor-pointer bg-white rounded-xl shadow-lg p-8 flex flex-col items-center justify-center border border-gray-100 hover:shadow-xl hover:scale-[1.03] transition"
-              onClick={() => navigate(`/dashboard/notes?groupId=${groupId}`)}
+              onClick={() =>
+                navigate(`/dashboard/study-groups/${groupId}/notes`, {
+                  state: { groupName },
+                })
+              }
             >
               <span className="text-3xl mb-2">📒</span>
               <span className="font-bold text-lg">Notes</span>

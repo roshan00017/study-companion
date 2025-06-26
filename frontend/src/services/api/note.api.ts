@@ -1,8 +1,11 @@
 import type { NotePayload } from "../../types/note.type";
 import api from "../api";
 
-export const getNotes = async () => {
-  const res = await api.get("/notes");
+export const getNotes = async (groupId?: string) => {
+  const url = groupId
+    ? `/notes?groupId=${encodeURIComponent(groupId)}`
+    : "/notes";
+  const res = await api.get(url);
   return res.data.data;
 };
 
