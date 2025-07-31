@@ -14,7 +14,6 @@ import SetModal from "../../components/flashCards/SetModal";
 
 import type { FlashcardSet } from "../../types/flashcard.type";
 import FlashcardSetCard from "../../components/flashCards/FlashcardSet";
-import BackButton from "../../components/button/back-button";
 
 export default function FlashcardsPage() {
   const [sets, setSets] = useState<FlashcardSet[]>([]);

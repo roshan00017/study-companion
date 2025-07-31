@@ -5,7 +5,6 @@ import {
   createStudyGroup,
 } from "../../services/api/study-group.api";
 import StudyGroupModal from "../../components/studyGroup/StudyGroupModal";
-import BackButton from "../../components/button/back-button";
 
 interface StudyGroup {
   _id: string;

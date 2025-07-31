@@ -23,7 +23,6 @@ import NoteCard from "../../components/notes/NoteCard";
 import NoteModal from "../../components/notes/NoteModal";
 import ViewNoteModal from "../../components/notes/ViewNoteModal";
 import type { Note, NotePayload } from "../../types/note.type";
-import BackButton from "../../components/button/back-button";
 
 export default function NotesPage() {
   const dispatch = useDispatch();
