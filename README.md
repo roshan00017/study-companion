@@ -15,9 +15,8 @@
   - Summarize content
   - Generate study materials
   - Answer questions
-- 🔍 **AI Summarization** – Summarize notes, tasks, or flashcards with a single click.
-- 🧪 **AI Quiz Generation** *(coming soon)* – Generate multiple choice questions from your notes.
-- **general chat** *(coming soon)* - Chat feature to discuss on various topics in different rooms with different users.
+- 🤖 **Study Group** – Make group and add friend to sahre notes,task , cards
+- **group chat** *(coming soon)* - Chat feature to discuss on various topics in different rooms with different users on group.
 
 ---
 
