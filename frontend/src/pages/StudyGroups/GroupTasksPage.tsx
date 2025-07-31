@@ -10,6 +10,7 @@ import TaskCard from "../../components/task/TaskCard";
 import TaskModal from "../../components/task/TaskModal";
 import type { Task, TaskPayload } from "../../types/task.type";
 import TaskViewModal from "../../components/task/TaskViewModal";
+import BackButton from "../../components/button/back-button";
 
 export default function GroupTasksPage() {
   const { groupId } = useParams();
@@ -123,6 +124,7 @@ export default function GroupTasksPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto p-6">
+        <BackButton className="mb-4" />
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
             {groupName ? `${groupName} Tasks` : "Group Tasks"}

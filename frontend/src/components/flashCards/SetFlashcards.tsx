@@ -11,12 +11,20 @@ import {
 import CardModal from "./CardModal";
 import { useSelector, useDispatch } from "react-redux";
 import { type RootState } from "../../store";
-import { setFlashcards, addFlashcard, removeFlashcard, clearFlashcards } from "../../store/flashcardsSlice";
+import {
+  setFlashcards,
+  addFlashcard,
+  removeFlashcard,
+  clearFlashcards,
+} from "../../store/flashcardsSlice";
+import BackButton from "../button/back-button";
 
 export default function SetFlashcards() {
   const { setId } = useParams();
   const dispatch = useDispatch();
-  const { setId: reduxSetId, cards } = useSelector((state: RootState) => state.flashcards);
+  const { setId: reduxSetId, cards } = useSelector(
+    (state: RootState) => state.flashcards
+  );
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -72,6 +80,7 @@ export default function SetFlashcards() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto p-6">
+        <BackButton className="mb-4" />
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
             Flashcards

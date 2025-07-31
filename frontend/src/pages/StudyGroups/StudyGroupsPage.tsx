@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserStudyGroups, createStudyGroup } from "../../services/api/study-group.api";
+import {
+  getUserStudyGroups,
+  createStudyGroup,
+} from "../../services/api/study-group.api";
 import StudyGroupModal from "../../components/studyGroup/StudyGroupModal";
+import BackButton from "../../components/button/back-button";
 
 interface StudyGroup {
   _id: string;
@@ -69,7 +73,11 @@ export default function StudyGroupsPage() {
               <div
                 key={group._id}
                 className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col gap-2 transition-transform hover:scale-[1.02] hover:shadow-xl border border-gray-100 dark:border-gray-700 cursor-pointer"
-                onClick={() => navigate(`/dashboard/study-groups/${group._id}`, { state: { groupName: group.name } })}
+                onClick={() =>
+                  navigate(`/dashboard/study-groups/${group._id}`, {
+                    state: { groupName: group.name },
+                  })
+                }
               >
                 <div className="font-bold text-xl text-green-700 dark:text-green-400 mb-1">
                   {group.name}
@@ -83,7 +91,7 @@ export default function StudyGroupsPage() {
             ))}
           </div>
         )}
-      {modalOpen && (
+        {modalOpen && (
           <StudyGroupModal
             onSubmit={handleCreate}
             onClose={() => setModalOpen(false)}

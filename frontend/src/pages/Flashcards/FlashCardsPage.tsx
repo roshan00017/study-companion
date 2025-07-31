@@ -14,6 +14,7 @@ import SetModal from "../../components/flashCards/SetModal";
 
 import type { FlashcardSet } from "../../types/flashcard.type";
 import FlashcardSetCard from "../../components/flashCards/FlashcardSet";
+import BackButton from "../../components/button/back-button";
 
 export default function FlashcardsPage() {
   const [sets, setSets] = useState<FlashcardSet[]>([]);
@@ -21,7 +22,6 @@ export default function FlashcardsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  
 
   useEffect(() => {
     loadSets();
@@ -111,7 +111,7 @@ export default function FlashcardsPage() {
           />
         </div>
 
-    {loading ? (
+        {loading ? (
           <div className="flex justify-center items-center h-34">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
           </div>
@@ -130,7 +130,7 @@ export default function FlashcardsPage() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="h-34 flex" 
+                  className="h-34 flex"
                 >
                   <FlashcardSetCard
                     set={set}
