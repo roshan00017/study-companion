@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import LandingPage from "../pages/LandingPage";
 
 export default function RootRedirect() {
   const { user, loading } = useAuth();
@@ -8,5 +9,9 @@ export default function RootRedirect() {
     return null; // or a spinner
   }
 
-  return <Navigate to={user ? "/dashboard" : "/login"} replace />;
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <LandingPage />;
 }
