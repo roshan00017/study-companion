@@ -1,19 +1,23 @@
-import { OpenAI } from "openai";
+import { GoogleGenerativeAI } from "@google/genai";
 
-const groq = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
-  baseURL: "https://api.groq.com/openai/v1",
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
 });
 
 export async function askAI(
   messages: { role: "system" | "user" | "assistant"; content: string }[]
 ) {
-  const response = await groq.chat.completions.create({
-    model: "meta-llama/llama-4-scout-17b-16e-instruct",
+  const formattedMessages = messages.map((msg) => ({
+    role: msg.role,
+    parts: [{ text: msg.content }],
+  }));
 
-    messages,
+  const result = await model.generateContent({
+    contents: formattedMessages,
   });
 
-  const reply = response.choices[0].message;
+  const reply = result.text();
   return reply;
 }
