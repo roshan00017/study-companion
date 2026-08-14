@@ -1,9 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
-const genAI = new GoogleGenAI(process.env.GEMINI_API_KEY!);
-
-const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+const genAI = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY!,
 });
 
 export async function askAI(
@@ -14,10 +12,12 @@ export async function askAI(
     parts: [{ text: msg.content }],
   }));
 
-  const result = await model.generateContent({
+  const result = await genAI.models.generateContent({
+    model: "gemini-1.5-flash",
     contents: formattedMessages,
   });
 
   const reply = result.text();
   return reply;
-}
+}n
+
