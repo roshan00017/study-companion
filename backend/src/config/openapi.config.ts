@@ -1,4 +1,4 @@
-import { env } from "../config/env.js";
+import { env } from "./env.js";
 
 /** Gemini's current text-generation REST API. */
 const INTERACTIONS_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
